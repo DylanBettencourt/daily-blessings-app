@@ -1,0 +1,16 @@
+[
+  {"category":"staple","product_name":"Maize Meal","size":"5kg","price":89.99,"retailer":"Shoprite","unit":"pack","last_updated":"2026-05-01"},
+  {"category":"staple","product_name":"Rice","size":"2kg","price":54.99,"retailer":"Pick n Pay","unit":"pack","last_updated":"2026-05-01"},
+  {"category":"staple","product_name":"Brown Bread","size":"700g","price":18.99,"retailer":"Checkers","unit":"loaf","last_updated":"2026-05-01"},
+  {"category":"protein","product_name":"Sugar Beans","size":"2kg","price":69.99,"retailer":"Shoprite","unit":"pack","last_updated":"2026-05-01"},
+  {"category":"protein","product_name":"Eggs","size":"18 pack","price":62.99,"retailer":"Boxer","unit":"tray","last_updated":"2026-05-01"},
+  {"category":"protein","product_name":"Chicken Pieces","size":"2kg","price":109.99,"retailer":"Pick n Pay","unit":"pack","last_updated":"2026-05-01"},
+  {"category":"cooking_basics","product_name":"Sunflower Oil","size":"750ml","price":39.99,"retailer":"Shoprite","unit":"bottle","last_updated":"2026-05-01"},
+  {"category":"cooking_basics","product_name":"Iodised Salt","size":"1kg","price":13.99,"retailer":"Checkers","unit":"pack","last_updated":"2026-05-01"},
+  {"category":"cooking_basics","product_name":"Curry Powder","size":"100g","price":16.99,"retailer":"Shoprite","unit":"pack","last_updated":"2026-05-01"},
+  {"category":"hygiene","product_name":"Bath Soap","size":"175g","price":9.99,"retailer":"Boxer","unit":"bar","last_updated":"2026-05-01"},
+  {"category":"hygiene","product_name":"Toothpaste","size":"100ml","price":19.99,"retailer":"Checkers","unit":"tube","last_updated":"2026-05-01"},
+  {"category":"hygiene","product_name":"Washing Powder","size":"1kg","price":34.99,"retailer":"Shoprite","unit":"pack","last_updated":"2026-05-01"},
+  {"category":"veg","product_name":"Potatoes","size":"7kg","price":59.99,"retailer":"Shoprite","unit":"bag","last_updated":"2026-05-01"},
+  {"category":"veg","product_name":"Onions","size":"2kg","price":29.99,"retailer":"Pick n Pay","unit":"bag","last_updated":"2026-05-01"}
+]
