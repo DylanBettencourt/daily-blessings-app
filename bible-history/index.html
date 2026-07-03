@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Bible in a Minute — A Short History</title>
+<meta name="description" content="A short, animated, chronological journey through the Bible.">
+<style>
+  :root{
+    --bg-0:#0b1020; --bg-1:#141b34; --gold:#e8c37a; --text:#f4efe3; --muted:#a9b0c8;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%; background:var(--bg-0); overflow:hidden;}
+  body{
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color:var(--text);
+  }
+
+  /* ---------- Progress ---------- */
+  #progress-wrap{
+    position:fixed; top:0; left:0; right:0; height:4px; background:rgba(255,255,255,.08); z-index:50;
+  }
+  #progress-bar{
+    height:100%; width:0%; background:linear-gradient(90deg,var(--gold),#fff3d6);
+    transition:width .35s ease;
+  }
+  #counter{
+    position:fixed; top:14px; right:16px; z-index:50; font-size:12px; letter-spacing:.08em;
+    color:var(--muted); font-variant-numeric:tabular-nums;
+  }
+
+  /* ---------- Slides ---------- */
+  #stage{
+    position:relative; height:100vh; height:100dvh; width:100%; overflow:hidden;
+  }
+  .slide{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; text-align:center; padding:8vh 8vw;
+    opacity:0; transform:translateY(24px) scale(.98);
+    transition:opacity .6s ease, transform .6s ease;
+    pointer-events:none;
+  }
+  .slide.active{
+    opacity:1; transform:translateY(0) scale(1);
+    pointer-events:auto;
+  }
+  .slide.leaving{
+    opacity:0; transform:translateY(-24px) scale(1.02);
+  }
+
+  .icon{
+    font-size:min(17vw, 84px); line-height:1; margin-bottom:18px;
+    filter:drop-shadow(0 6px 18px rgba(0,0,0,.4));
+    animation:float 3.5s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-8px);}
+  }
+
+  .era{
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--gold);
+    margin-bottom:10px; opacity:.9;
+  }
+  h1{
+    font-size:clamp(24px, 7vw, 40px); margin:0 0 14px; font-weight:700; line-height:1.15;
+  }
+  p.desc{
+    font-size:clamp(15px, 4.2vw, 18px); color:var(--text); line-height:1.55; max-width:520px;
+    margin:0 0 16px; opacity:.92;
+  }
+  .ref{
+    font-size:13px; color:var(--muted); font-style:italic; letter-spacing:.02em;
+  }
+
+  /* ---------- Dots ---------- */
+  #dots{
+    position:fixed; bottom:calc(18px + env(safe-area-inset-bottom)); left:0; right:0;
+    display:flex; justify-content:center; gap:7px; z-index:50;
+  }
+  .dot{
+    width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.25);
+    transition:all .3s ease;
+  }
+  .dot.on{ background:var(--gold); width:20px; border-radius:4px; }
+
+  /* ---------- Nav hint ---------- */
+  #hint{
+    position:fixed; bottom:calc(48px + env(safe-area-inset-bottom)); left:0; right:0;
+    text-align:center; font-size:11px; color:var(--muted); letter-spacing:.05em;
+    opacity:1; transition:opacity .6s ease; z-index:50; pointer-events:none;
+  }
+  #hint.hide{ opacity:0; }
+  #hint span{ display:inline-block; animation:pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{opacity:.4;} 50%{opacity:1;} }
+
+  /* tap zones */
+  .zone{ position:fixed; top:0; bottom:0; width:35%; z-index:40; }
+  #zone-prev{ left:0; }
+  #zone-next{ right:0; }
+
+  /* replay button on final slide */
+  .replay{
+    margin-top:8px; padding:12px 26px; border-radius:999px; border:1px solid var(--gold);
+    background:transparent; color:var(--gold); font-size:14px; letter-spacing:.04em;
+    pointer-events:auto; cursor:pointer;
+  }
+  .replay:active{ background:var(--gold); color:#1a1508; }
+</style>
+</head>
+<body>
+
+<div id="progress-wrap"><div id="progress-bar"></div></div>
+<div id="counter"></div>
+
+<div id="stage"></div>
+
+<div id="hint"><span>‹ tap or swipe to continue ›</span></div>
+<div id="dots"></div>
+
+<div class="zone" id="zone-prev" aria-label="Previous"></div>
+<div class="zone" id="zone-next" aria-label="Next"></div>
+
+<script>
+const EVENTS = [
+  { era:"The Beginning", icon:"✨", title:"Creation", ref:"Genesis 1–2",
+    desc:"God speaks the universe into being — light, land, sea, and life — and forms humanity in His image." },
+  { era:"c. 4000 BC", icon:"🍎", title:"The Fall", ref:"Genesis 3",
+    desc:"Adam and Eve disobey God. Sin enters the world, and humanity is separated from Eden." },
+  { era:"c. 2350 BC", icon:"🌊", title:"The Flood", ref:"Genesis 6–9",
+    desc:"The earth is judged by water. Noah, his family, and the animals are saved in the ark." },
+  { era:"c. 2000 BC", icon:"⭐", title:"Abraham's Covenant", ref:"Genesis 12–22",
+    desc:"God calls Abraham and promises to make him a great nation through whom all peoples will be blessed." },
+  { era:"c. 1900 BC", icon:"🧥", title:"Joseph in Egypt", ref:"Genesis 37–50",
+    desc:"Sold into slavery by his brothers, Joseph rises to power and saves his family from famine." },
+  { era:"c. 1446 BC", icon:"🔥", title:"The Exodus", ref:"Exodus 1–14",
+    desc:"Moses leads Israel out of slavery in Egypt. God parts the Red Sea and gives the Ten Commandments." },
+  { era:"c. 1000 BC", icon:"👑", title:"King David", ref:"1–2 Samuel",
+    desc:"Israel becomes a kingdom. David unites the nation and is promised an everlasting throne." },
+  { era:"c. 586 BC", icon:"⛓️", title:"Exile to Babylon", ref:"2 Kings 25",
+    desc:"Jerusalem falls. The temple is destroyed and God's people are carried into exile." },
+  { era:"c. 538 BC", icon:"🏛️", title:"Return & Rebuilding", ref:"Ezra – Nehemiah",
+    desc:"Exiles return to Jerusalem, rebuild the temple and the city walls, and renew their covenant with God." },
+  { era:"c. 4 BC", icon:"👶", title:"Birth of Jesus", ref:"Luke 2 · Matthew 1–2",
+    desc:"God becomes flesh. Jesus, the promised Messiah, is born in Bethlehem." },
+  { era:"c. AD 30", icon:"✝️", title:"Death & Resurrection", ref:"The Gospels",
+    desc:"Jesus is crucified for the sins of the world — and rises from the dead, conquering death forever." },
+  { era:"c. AD 30", icon:"🔥", title:"The Church Begins", ref:"Acts 2",
+    desc:"The Holy Spirit comes at Pentecost. The Church is born and the good news begins to spread." },
+  { era:"The End", icon:"🌅", title:"Christ's Return", ref:"Revelation 21–22",
+    desc:"One day Jesus returns to make all things new, in a world with no more tears, death, or pain." },
+];
+
+const stage = document.getElementById('stage');
+const dotsEl = document.getElementById('dots');
+const bar = document.getElementById('progress-bar');
+const counter = document.getElementById('counter');
+const hint = document.getElementById('hint');
+
+EVENTS.forEach((e, i) => {
+  const slide = document.createElement('div');
+  slide.className = 'slide';
+  slide.dataset.index = i;
+  slide.innerHTML = `
+    <div class="icon">${e.icon}</div>
+    <div class="era">${e.era}</div>
+    <h1>${e.title}</h1>
+    <p class="desc">${e.desc}</p>
+    <div class="ref">${e.ref}</div>
+    ${i === EVENTS.length - 1 ? '<button class="replay" id="replayBtn">Start Again</button>' : ''}
+  `;
+  stage.appendChild(slide);
+
+  const dot = document.createElement('div');
+  dot.className = 'dot';
+  dotsEl.appendChild(dot);
+});
+
+const slides = [...document.querySelectorAll('.slide')];
+const dots = [...document.querySelectorAll('.dot')];
+let current = 0;
+let hintShown = true;
+
+function render(prev, next){
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'leaving');
+    if (i === next) s.classList.add('active');
+  });
+  if (prev !== null && prev !== next) {
+    slides[prev].classList.add('leaving');
+  }
+  dots.forEach((d, i) => d.classList.toggle('on', i === next));
+  bar.style.width = `${((next + 1) / EVENTS.length) * 100}%`;
+  counter.textContent = `${next + 1} / ${EVENTS.length}`;
+
+  if (hintShown) { hint.classList.add('hide'); hintShown = false; }
+}
+
+function goTo(i){
+  if (i < 0 || i >= EVENTS.length) return;
+  const prev = current;
+  current = i;
+  render(prev, current);
+}
+
+function next(){ goTo(current + 1); }
+function prevSlide(){ goTo(current - 1); }
+
+document.getElementById('zone-next').addEventListener('click', next);
+document.getElementById('zone-prev').addEventListener('click', prevSlide);
+
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.id === 'replayBtn') goTo(0);
+});
+
+// keyboard support (desktop testing)
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') next();
+  if (e.key === 'ArrowLeft') prevSlide();
+});
+
+// swipe support
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+    dx < 0 ? next() : prevSlide();
+  }
+}, { passive: true });
+
+render(null, 0);
+</script>
+</body>
+</html>
